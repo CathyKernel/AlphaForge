@@ -1,0 +1,64 @@
+# Netlify static-demo configuration.
+#
+# Netlify serves static files only — it cannot run the FastAPI backend.
+# scripts/make_netlify_snapshot.py pre-renders every read-only API response
+# under app/static/api/snap/, and the rewrites below map /api/* onto those
+# snapshots so the hosted demo serves the same JSON as the local server.
+# The frontend (app/static/js/app.js) detects static hosting via the
+# netlify.json marker and degrades interactive endpoints gracefully.
+#
+# No build step: the repository ships the dashboard and its snapshots.
+# Regenerate snapshots after data/factor changes with:
+#   PYTHONPATH=src:. python scripts/make_netlify_snapshot.py
+
+[build]
+  command = ""
+  publish = "app/static"
+
+[[redirects]]
+  from = "/api/health"
+  to = "/api/snap/health.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/overview"
+  to = "/api/snap/overview.json"
+  status = 200
+
+# The factor table without a snapshot-specific path (default IC horizon = 5d).
+[[redirects]]
+  from = "/api/factors"
+  to = "/api/snap/factors_h5.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/backtest"
+  to = "/api/snap/backtest.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/ml"
+  to = "/api/snap/ml.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/risk"
+  to = "/api/snap/risk.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/universe/pit"
+  to = "/api/snap/universe_pit.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/universe"
+  to = "/api/snap/universe.json"
+  status = 200
+
+# The FastAPI app mounts assets at /static/*; on Netlify the publish root IS
+# that static directory, so strip the prefix.
+[[redirects]]
+  from = "/static/*"
+  to = "/:splat"
+  status = 200
