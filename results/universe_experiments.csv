@@ -1,0 +1,6 @@
+,net_cagr,sharpe,max_dd,info_ratio,turnover,cost_drag
+A_static_universe,0.5632,1.35,-0.496,1.27,0.97,0.0117
+B_pit_universe,0.3096,0.92,-0.534,0.65,1.01,0.0121
+C_pit_sector_beta_neutral,0.2056,0.88,-0.433,0.34,1.22,0.0147
+D_pit_mean_variance,0.1907,0.91,-0.426,0.27,1.08,0.013
+E_pit_sqrt_impact,0.1579,0.71,-0.443,0.1,1.22,0.0546

@@ -1,0 +1,87 @@
+{
+  "signal": "composite_top5_long_short",
+  "config": {
+    "rebalance": "MS",
+    "execution_lag": 1,
+    "top_n": 15,
+    "side": "long_short",
+    "weighting": "equal",
+    "min_price": 5.0,
+    "min_dollar_vol_musd": 20.0,
+    "benchmark": "SPY",
+    "vol_target": null
+  },
+  "costs_bps_per_side": 10.0,
+  "performance": {
+    "total_return": 2.102197142220226,
+    "cagr": 0.11267932311885764,
+    "ann_vol": 0.2315992101216992,
+    "sharpe": 0.5768211362506004,
+    "sortino": 0.8390356884208139,
+    "calmar": 0.24942359856405155,
+    "max_drawdown": -0.45175887032165396,
+    "var95_historical": 0.02314686533620298,
+    "var95_cornish_fisher": 0.02251634987689787,
+    "cvar95": 0.03302787371853289,
+    "skew": 0.044314021871312385,
+    "excess_kurtosis": 2.6072553268147947,
+    "best_day": 0.09139620184198342,
+    "worst_day": -0.07016250528539024,
+    "pct_positive_days": 0.5261976047904192,
+    "n_days": 2672,
+    "benchmark_total_return": 3.6711278972716954,
+    "benchmark_cagr": 0.15646924586588584,
+    "benchmark_sharpe": 0.9108358237860351,
+    "excess_cagr": -0.0437899227470282,
+    "tracking_error": 0.20214514626949062,
+    "information_ratio": -0.13604059164503648,
+    "alpha_ann": 0.020148612444536362,
+    "beta": 0.7042138952080003,
+    "up_capture": 0.859513097386968,
+    "down_capture": 0.8677404358951419,
+    "correlation_benchmark": 0.5377735083441916
+  },
+  "risk": {
+    "var95_historical": 0.02314686533620298,
+    "var99_historical": 0.03954299919439349,
+    "var95_cornish_fisher": 0.02251634987689787,
+    "cvar95": 0.03302787371853289,
+    "skew": 0.044314021871312385,
+    "excess_kurtosis": 2.6072553268147947,
+    "worst_day": -0.07016250528539024,
+    "worst_week": -0.1378811499203022,
+    "max_drawdown": -0.45175887032165396,
+    "benchmark_max_drawdown": -0.3371726769000345
+  },
+  "drawdown_episodes": [
+    {
+      "peak": "2021-11-08",
+      "trough": "2022-12-27",
+      "recovery": "2023-07-18",
+      "depth": -0.4518,
+      "length_days": 414,
+      "recovery_days": 617
+    },
+    {
+      "peak": "2020-06-08",
+      "trough": "2020-11-03",
+      "recovery": "2021-01-22",
+      "depth": -0.2875,
+      "length_days": 148,
+      "recovery_days": 228
+    },
+    {
+      "peak": "2020-02-19",
+      "trough": "2020-03-18",
+      "recovery": "2020-06-05",
+      "depth": -0.2338,
+      "length_days": 28,
+      "recovery_days": 107
+    }
+  ],
+  "turnover": {
+    "avg_turnover_per_rebalance": 2.0875467057858557,
+    "avg_n_holdings": 30.0,
+    "cost_drag_ann": -0.02520056382553464
+  }
+}

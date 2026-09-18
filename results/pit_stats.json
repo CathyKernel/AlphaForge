@@ -1,0 +1,12 @@
+{
+  "n_dates": 2944,
+  "n_tickers_ever": 503,
+  "members_first": 315,
+  "members_last": 503,
+  "members_min": 315,
+  "members_max": 503,
+  "members_mean": 410.3,
+  "additions_after_start": 188,
+  "names_with_unknown_addition": 0,
+  "data_terminated": 0
+}

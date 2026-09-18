@@ -1,0 +1,10 @@
+{
+  "universe": "2026-09-18 (503 tickers)",
+  "source": "yahoo",
+  "start": "2015-01-02",
+  "end": "2026-09-17",
+  "n_tickers": 504,
+  "n_rows": 1483776,
+  "created_at": "2026-09-18T08:08:34+00:00",
+  "notes": "includes benchmark SPY; source=bundled"
+}

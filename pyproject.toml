@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alphaforge"
+version = "1.0.0"
+description = "End-to-end quantitative research platform for US equities: point-in-time S&P 500 data pipelines, 27-factor library, vectorised backtesting with portfolio construction, ML/DL alpha models with purged walk-forward validation."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "CathyKernel" }]
+requires-python = ">=3.10"
+keywords = [
+    "quantitative-finance", "backtesting", "factor-models", "alpha",
+    "equities", "machine-learning", "portfolio-construction", "finance",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "pyarrow>=14.0",
+    "scipy>=1.10",
+    "scikit-learn>=1.3",
+    "matplotlib>=3.7",
+    "lightgbm>=4.0",
+    "yfinance>=0.2.40",
+    "requests>=2.31",
+    "lxml>=4.9",
+]
+
+[project.optional-dependencies]
+dl = ["torch>=2.1"]
+app = ["fastapi>=0.110", "uvicorn>=0.29"]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.4",
+    "mypy>=1.8",
+    "pre-commit>=3.5",
+    "httpx>=0.27",
+]
+
+[project.urls]
+Homepage = "https://github.com/CathyKernel/alphaforge"
+Documentation = "https://github.com/CathyKernel/alphaforge#readme"
+Issues = "https://github.com/CathyKernel/alphaforge/issues"
+
+[project.scripts]
+alphaforge = "alphaforge.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+alphaforge = ["py.typed"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests", "app"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "A", "C4", "SIM", "RET"]
+ignore = [
+    "E501",   # line length handled by formatter
+    "SIM108", # ternary sometimes hurts readability in numerical code
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+files = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+pythonpath = ["."]
+markers = [
+    "slow: tests that train models or download data",
+    "network: tests requiring internet access",
+]
+filterwarnings = ["ignore::FutureWarning"]

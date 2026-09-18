@@ -1,0 +1,16 @@
+services:
+  alphaforge:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      # persist downloaded data and generated reports outside the container
+      - alphaforge-data:/app/data
+      - alphaforge-results:/app/results
+    environment:
+      - ALPHAFORGE_DATA_DIR=/app/data
+    restart: unless-stopped
+
+volumes:
+  alphaforge-data:
+  alphaforge-results:

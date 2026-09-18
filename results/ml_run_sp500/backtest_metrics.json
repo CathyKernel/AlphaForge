@@ -1,0 +1,7 @@
+{
+  "net_cagr": 0.1875,
+  "sharpe": 0.65,
+  "max_dd": -0.549,
+  "info_ratio": 0.34,
+  "turnover_per_rebalance": 1.25
+}

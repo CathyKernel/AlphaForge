@@ -1,0 +1,30 @@
+{
+  "mean_psi": {
+    "dist_52w_high": 0.0811,
+    "max_dd_126": 0.0538,
+    "amihud": 0.0526,
+    "mom_252": 0.025,
+    "mom_126": 0.0138,
+    "bb_pos": 0.0117,
+    "skew_63": 0.0101,
+    "mom_63": 0.0069,
+    "vol_63": 0.0055,
+    "dol_vol_21": 0.0052,
+    "rev_gap": 0.0047,
+    "mom_slope": 0.0045,
+    "idio_vol_21": 0.0044,
+    "vol_ratio": 0.0043,
+    "sharpe_63": 0.0042,
+    "atr_21": 0.0042,
+    "vol_21": 0.004,
+    "sma_ratio_50": 0.0038,
+    "mom_21": 0.003,
+    "rsi_14": 0.0025,
+    "vol_trend": 0.0019,
+    "rev_5": 0.0017,
+    "rev_1": 0.001,
+    "vol_spike": 0.0007
+  },
+  "n_eval_dates": 18,
+  "significant_at_some_point": {}
+}

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AlphaForge — end-to-end quant research platform for US equities: factors, backtests, ML, risk.">
+  <title>AlphaForge · Quant Research Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230b0e14'/><path d='M6 24 12 14 17 19 26 7' stroke='%2314b8a6' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" class="brand-mark" aria-hidden="true">
+        <path d="M6 24 12 14 17 19 26 7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">AlphaForge</span>
+      <span class="brand-sub">quant research platform</span>
+    </div>
+    <div id="ticker-strip" class="ticker-strip" aria-live="off"></div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Dashboard sections">
+    <button class="tab" id="tab-overview" role="tab" aria-selected="true" aria-controls="panel-overview">Overview</button>
+    <button class="tab" id="tab-factors" role="tab" aria-selected="false" aria-controls="panel-factors">Factor Library</button>
+    <button class="tab" id="tab-backtest" role="tab" aria-selected="false" aria-controls="panel-backtest">Backtest Explorer</button>
+    <button class="tab" id="tab-ml" role="tab" aria-selected="false" aria-controls="panel-ml">ML Models</button>
+    <button class="tab" id="tab-risk" role="tab" aria-selected="false" aria-controls="panel-risk">Risk &amp; Data</button>
+    <button class="tab" id="tab-pit" role="tab" aria-selected="false" aria-controls="panel-pit">Universe &amp; PIT</button>
+  </nav>
+
+  <main id="main">
+    <!-- ================= OVERVIEW ================= -->
+    <section id="panel-overview" class="panel" role="tabpanel" aria-labelledby="tab-overview">
+      <div class="stat-row" id="ov-stats"></div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h2>Flagship strategies — net of 10 bps/side costs</h2>
+          <p class="card-note">Long-only, monthly rebalance, T+1 execution. Composite = top-5 factors by |ICIR| (in-sample selection, disclosed); ML ensemble = strictly out-of-sample predictions from 6 purged walk-forward folds.</p>
+          <div id="ov-flagship-chart" class="chart"></div>
+          <div class="legend" id="ov-flagship-legend"></div>
+        </article>
+        <article class="card">
+          <h2>Headline numbers</h2>
+          <div id="ov-flagship-tables"></div>
+        </article>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h2>ML models — out-of-sample rank IC</h2>
+          <div id="ov-ml-cards" class="mini-cards"></div>
+        </article>
+        <article class="card">
+          <h2>Data quality — 7 automated checks</h2>
+          <div id="ov-quality"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================= FACTORS ================= -->
+    <section id="panel-factors" class="panel hidden" role="tabpanel" aria-labelledby="tab-factors">
+      <article class="card">
+        <div class="card-head">
+          <h2>Factor library — 27 cross-sectional signals</h2>
+          <div class="controls">
+            <label for="f-horizon">IC horizon</label>
+            <select id="f-horizon" class="select">
+              <option value="1">1d</option><option value="3">3d</option>
+              <option value="5" selected>5d</option><option value="10">10d</option>
+              <option value="21">21d</option>
+            </select>
+            <label for="f-category">Category</label>
+            <select id="f-category" class="select"><option value="all">all</option></select>
+            <label for="f-search">Search</label>
+            <input id="f-search" class="input" type="search" placeholder="e.g. mom" autocomplete="off">
+          </div>
+        </div>
+        <p class="card-note">Rank IC vs forward T+1 → T+1+h returns · Newey-West t-stats · quantile spread net of 10 bps/side. Click a row for IC decay.</p>
+        <div class="table-wrap"><table class="table" id="f-table"></table></div>
+      </article>
+      <article class="card hidden" id="f-decay-card">
+        <h2>IC decay — <span id="f-decay-name"></span></h2>
+        <div id="f-decay-chart" class="chart chart-short"></div>
+      </article>
+    </section>
+
+    <!-- ================= BACKTEST ================= -->
+    <section id="panel-backtest" class="panel hidden" role="tabpanel" aria-labelledby="tab-backtest">
+      <article class="card">
+        <div class="card-head">
+          <h2>Backtest explorer — live vectorised engine</h2>
+          <div class="controls">
+            <label for="b-factor">Signal</label>
+            <select id="b-factor" class="select"></select>
+            <label for="b-rebalance">Rebalance</label>
+            <select id="b-rebalance" class="select">
+              <option>W-FRI</option><option>W-MON</option>
+              <option>MS</option><option>ME</option><option>D</option>
+            </select>
+            <label for="b-side">Book</label>
+            <select id="b-side" class="select">
+              <option value="long_short">long/short</option>
+              <option value="long">long</option>
+              <option value="short">short</option>
+            </select>
+            <label for="b-topn">Names/leg <output id="b-topn-out">15</output></label>
+            <input id="b-topn" type="range" min="5" max="40" value="15" class="range">
+            <label for="b-cost">Cost bps/side <output id="b-cost-out">10</output></label>
+            <input id="b-cost" type="range" min="0" max="25" value="10" step="0.5" class="range">
+            <button id="b-run" class="btn">Run backtest</button>
+          </div>
+        </div>
+        <p class="card-note">Signals are direction-corrected by their own IC sign; the engine trades at the next close (T+1) with per-side costs. Typical run: 1–3 s.</p>
+        <div id="b-status" class="status hidden" role="status"></div>
+      </article>
+
+      <div id="b-results" class="hidden">
+        <div class="stat-row" id="b-stats"></div>
+        <article class="card">
+          <h2 id="b-title">Equity &amp; drawdown</h2>
+          <div id="b-equity-chart" class="chart"></div>
+          <div id="b-dd-chart" class="chart chart-short"></div>
+          <div class="legend" id="b-legend"></div>
+        </article>
+        <div class="grid-2">
+          <article class="card">
+            <h2>Rolling 126-day Sharpe</h2>
+            <div id="b-rs-chart" class="chart chart-short"></div>
+          </article>
+          <article class="card">
+            <h2>Monthly returns</h2>
+            <div id="b-monthly"></div>
+          </article>
+        </div>
+        <div class="grid-2">
+          <article class="card">
+            <h2>Full metrics</h2>
+            <div class="table-wrap"><table class="table kv" id="b-metrics"></table></div>
+          </article>
+          <article class="card">
+            <h2>Current holdings</h2>
+            <div class="table-wrap"><table class="table" id="b-holdings"></table></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ML ================= -->
+    <section id="panel-ml" class="panel hidden" role="tabpanel" aria-labelledby="tab-ml">
+      <article class="card">
+        <h2>Out-of-sample rank IC by model</h2>
+        <p class="card-note">Predictions from 6-fold purged walk-forward CV (purge + embargo). The IC is computed strictly on unseen folds — no leakage.</p>
+        <div class="stat-row" id="ml-cards"></div>
+      </article>
+      <div class="grid-2">
+        <article class="card">
+          <h2>Cumulative OOS rank IC</h2>
+          <div class="controls">
+            <label for="ml-model">Model</label>
+            <select id="ml-model" class="select"><option>ensemble</option><option>lightgbm</option><option>lstm</option></select>
+          </div>
+          <div id="ml-cum-chart" class="chart chart-short"></div>
+          <div class="legend" id="ml-legend"></div>
+        </article>
+        <article class="card">
+          <h2>Daily OOS rank IC</h2>
+          <div id="ml-daily-chart" class="chart chart-short"></div>
+        </article>
+      </div>
+      <article class="card">
+        <h2>LightGBM feature importance (gain)</h2>
+        <div id="ml-importance" class="hbar-list"></div>
+      </article>
+    </section>
+
+    <!-- ================= RISK & DATA ================= -->
+    <section id="panel-risk" class="panel hidden" role="tabpanel" aria-labelledby="tab-risk">
+      <div class="stat-row" id="r-cards"></div>
+      <div class="grid-2">
+        <article class="card">
+          <h2>Drawdown forensics — top episodes</h2>
+          <p class="card-note">ML ensemble OOS strategy; peak → trough → recovery dating.</p>
+          <div class="table-wrap"><table class="table" id="r-dd-table"></table></div>
+        </article>
+        <article class="card">
+          <h2>Crisis stress test</h2>
+          <p class="card-note">How the strategy actually performed during famous crisis windows.</p>
+          <div class="table-wrap"><table class="table" id="r-stress-table"></table></div>
+        </article>
+      </div>
+      <article class="card">
+        <div class="card-head">
+          <h2>Universe coverage</h2>
+          <div class="controls">
+            <label for="u-search">Search</label>
+            <input id="u-search" class="input" type="search" placeholder="ticker" autocomplete="off">
+          </div>
+        </div>
+        <div class="table-wrap tall"><table class="table" id="r-universe"></table></div>
+      </article>
+    </section>
+
+    <!-- ================= UNIVERSE & PIT ================= -->
+    <section id="panel-pit" class="panel hidden" role="tabpanel" aria-labelledby="tab-pit">
+      <div class="stat-row" id="pit-cards"></div>
+      <div class="grid-2">
+        <article class="card">
+          <h2>Point-in-time membership, 2015&ndash;2026</h2>
+          <p class="card-note" id="pit-note">Names join the index on their official addition date and leave when price data ends — the tradable universe a live strategy would have seen.</p>
+          <div id="pit-members-chart" class="chart chart-short"></div>
+        </article>
+        <article class="card">
+          <h2>Index additions per year</h2>
+          <p class="card-note">Membership churn is the mechanism behind survivorship bias: ~190 names in today's list joined after 2015.</p>
+          <div id="pit-additions-chart" class="chart chart-short"></div>
+        </article>
+      </div>
+      <article class="card">
+        <h2>The universe bias tax — same signal, five honesty levels</h2>
+        <p class="card-note">Composite top-5 |ICIR| signal, monthly long top-15, 10 bps/side. Each row removes one source of flattering bias: survivorship (A&rarr;B), sector/beta exposure (B&rarr;C), concentration (C&rarr;D), linear costs (D&rarr;E).</p>
+        <div class="table-wrap"><table class="table" id="pit-experiments"></table></div>
+      </article>
+      <div class="grid-2">
+        <article class="card">
+          <h2>Feature drift (PSI, walk-forward)</h2>
+          <p class="card-note" id="pit-psi-note">Population stability index of ML features vs their trailing year. PSI &gt; 0.25 would trigger a retrain.</p>
+          <div id="pit-psi" class="hbar-list"></div>
+        </article>
+        <article class="card">
+          <h2>ML OOS ensemble — point-in-time backtest</h2>
+          <p class="card-note">Strictly out-of-sample purged walk-forward predictions, traded only on PIT members.</p>
+          <div class="table-wrap"><table class="table kv" id="pit-ml-table"></table></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>AlphaForge · data: Yahoo Finance (split-adjusted) · all numbers net of costs unless stated</span>
+    <span class="footer-dim">read-only research demo — not investment advice</span>
+  </footer>
+
+  <div id="toast" class="toast hidden" role="alert"></div>
+
+  <script src="/static/js/charts.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

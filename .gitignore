@@ -1,0 +1,41 @@
+# Bundled dataset (clone-and-run experience) is tracked on purpose;
+# only regenerated caches and intermediate fold checkpoints are ignored.
+data/universe/sp500_live.csv
+data/cache/*
+!data/cache/.gitkeep
+!data/cache/prices.parquet
+!data/cache/prices_manifest.json
+!data/cache/prices_sp500.parquet
+!data/cache/prices_sp500_manifest.json
+!data/cache/fundamentals.parquet
+
+# results (README showcase + dashboard inputs) are tracked;
+# intermediate LSTM fold checkpoints are not
+results/ml_run_lstm/
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# editors / os
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# notebooks
+.ipynb_checkpoints/

@@ -1,0 +1,15 @@
+{
+  "models":[
+    "lightgbm",
+    "lstm",
+    "ensemble"
+  ],
+  "n_splits":6,
+  "lstm":{
+    "lookback":40,
+    "max_epochs":8,
+    "hidden_size":48,
+    "num_layers":2
+  },
+  "merged_from":"\/home\/z\/my-project\/download\/alphaforge\/results\/ml_run"
+}
