@@ -7,10 +7,7 @@ const fmt = AF.fmt, pct = AF.pct, sf = AF.sf;
 const pf = (v, d = 1) => (v == null ? "–" : sf(v) + (100 * v).toFixed(d) + "%"); // signed pct
 
 async function getJSON(url, opts) {
-  let r = await fetch(url, opts);
-  // Static hosting (Netlify snapshot mode) cannot answer POST requests —
-  // fall back to the pre-rendered GET snapshot for the same URL.
-  if (!r.ok && opts && opts.method === "POST") r = await fetch(url);
+  const r = await fetch(url, opts);
   if (!r.ok) {
     let detail = r.statusText;
     try { detail = (await r.json()).detail || detail; } catch (e) { /* noop */ }
@@ -18,16 +15,6 @@ async function getJSON(url, opts) {
   }
   return r.json();
 }
-
-/* Static-hosting detection: netlify.json exists only in the published static
-   bundle (Netlify), never when the FastAPI backend serves this page. */
-let AF_STATIC = false;
-fetch("netlify.json", { method: "HEAD" })
-  .then((r) => { AF_STATIC = r.ok; })
-  .catch(() => { AF_STATIC = false; });
-
-/* Factor-table URL: live API query, or pre-rendered snapshot per horizon. */
-const factorTableURL = (h) => (AF_STATIC ? `/api/snap/factors_h${h}.json` : `/api/factors?horizon=${h}`);
 
 function toast(msg, ms = 2600) {
   const t = $("toast");
@@ -154,7 +141,7 @@ async function renderFactors() {
 }
 
 async function refreshFactorTable(h) {
-  const data = await getJSON(factorTableURL(h));
+  const data = await getJSON(`/api/factors?horizon=${h}`);
   fRows = data.factors;
   const cats = [...new Set(fRows.map((r) => r.category))].sort();
   const sel = $("f-category"), cur = sel.value || "all";
@@ -206,10 +193,7 @@ function sortRows(rows, { key, dir }) {
 
 async function showDecay(name) {
   try {
-    const hz = $("f-horizon").value;
-    const d = await getJSON(AF_STATIC
-      ? `/api/snap/decay/${name}_h${hz}.json`
-      : `/api/factors/decay?name=${encodeURIComponent(name)}&horizon=${hz}`);
+    const d = await getJSON(`/api/factors/decay?name=${encodeURIComponent(name)}&horizon=${$("f-horizon").value}`);
     $("f-decay-card").classList.remove("hidden");
     $("f-decay-name").textContent = name;
     AF.barChart($("f-decay-chart"), d.horizons.map(String), d.ic, {
@@ -221,10 +205,8 @@ async function showDecay(name) {
 }
 
 /* ================= backtest ================= */
-const BT_DEFAULT = { factor: "composite_top5", rebalance: "W-FRI", side: "long_short", top_n: 15, cost_bps: 10 };
-
 async function initBacktest() {
-  const { factors } = await getJSON(factorTableURL(5));
+  const { factors } = await getJSON("/api/factors?horizon=5");
   $("b-factor").innerHTML = '<option value="composite_top5">composite_top5 (top-5 ICIR)</option>' +
     factors.map((f) => `<option value="${f.name}">${f.name}</option>`).join("");
   $("b-topn").addEventListener("input", () => ($("b-topn-out").textContent = $("b-topn").value));
@@ -239,7 +221,7 @@ async function runBacktest() {
   btn.disabled = true;
   st.classList.remove("hidden", "err");
   const t0 = performance.now();
-  st.textContent = AF_STATIC ? "loading pre-rendered snapshot …" : "running vectorised backtest …";
+  st.textContent = "running vectorised backtest …";
   try {
     const body = {
       factor: $("b-factor").value,
@@ -253,17 +235,8 @@ async function runBacktest() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    // On static hosting only the flagship default is pre-rendered; custom
-    // parameters need the live backend, so render the snapshot with its own
-    // true labels instead of the requested ones.
-    const req = AF_STATIC && JSON.stringify(body) !== JSON.stringify(BT_DEFAULT) ? BT_DEFAULT : body;
-    if (req !== body) {
-      toast("static demo — custom parameters need the local FastAPI backend (README: Deployment)", 4200);
-    }
-    st.textContent = AF_STATIC
-      ? "pre-rendered snapshot — run the local backend for live backtests"
-      : `done in ${((performance.now() - t0) / 1000).toFixed(1)} s — ${b.n_trading_days.toLocaleString()} trading days`;
-    renderBacktest(b, req);
+    st.textContent = `done in ${((performance.now() - t0) / 1000).toFixed(1)} s — ${b.n_trading_days.toLocaleString()} trading days`;
+    renderBacktest(b, body);
   } catch (e) {
     st.classList.add("err");
     st.textContent = "error: " + e.message;
